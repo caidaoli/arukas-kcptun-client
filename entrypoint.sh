@@ -21,7 +21,8 @@ for((i=0;i<$length;i++)) ; do
 				port=`echo $cPortJson | jq ".service_port"`
 				addr=`echo $cPortJson | jq ".host" | awk -F '"' '{printf $2}'`
 				#addr=`host $addr | awk -F 'address ' '{printf $2}'`
-				break 2
+			  addr=`nslookup $addr 114.114.114.114 |grep Address | tail -1 | cut -d ":" -f 2`
+        break 2
 			fi
 		done
 	fi
@@ -35,7 +36,7 @@ fi
 
 echo "Query OK!Remote Address is $addr:$port"
 if [ -e "/arukas.host" ];then
-  old=`cat /arukas.host`
+  old=`pgrep client && cat /arukas.host`
 else
   old=''
 fi

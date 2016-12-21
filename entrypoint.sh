@@ -1,3 +1,4 @@
+KcptunKey=${KcptunKey:-password}
 if [ -e "/isrun" ];then
    echo "entrypoint already running"
    exit 0
@@ -36,7 +37,7 @@ fi
 
 echo "Query OK!Remote Address is $addr:$port"
 if [ -e "/arukas.host" ];then
-  old=`pgrep client && cat /arukas.host`
+  old=`cat /arukas.host`
 else
   old=''
 fi
@@ -46,6 +47,6 @@ if [ "$addr:$port" = "$old" ];then
   exit
 fi
 pkill client
-echo $addr:$port > /arukas.host
-client -r $addr:$port -mode fast2 -dscp 46 -mtu 1400 -crypt salsa20 -sndwnd 2048 -rcvwnd 2048 -autoexpire 60 -l :4440 &
+echo "$addr:$port" > /arukas.host
+client -r $addr:$port -mode fast2 -dscp 46 -mtu 1400 -crypt salsa20 -sndwnd 2048 -rcvwnd 2048 -autoexpire 60 -l :4440 -key $KcptunKey &
 rm -rf /isrun

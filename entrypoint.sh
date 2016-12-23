@@ -35,18 +35,20 @@ if [ "$addr" = "lost" -o "$port" = "0" ] ; then
   exit 1
 fi
 
+old=''
 echo "Query OK!Remote Address is $addr:$port"
-if [ -e "/arukas.host" ];then
-  old=`cat /arukas.host`
-else
-  old=''
+if pgrep -x client > /dev/null; then
+  echo "kcptun is running"
+  if [ -e "/arukas.host" ];then
+    old=`cat /arukas.host`
+  fi
 fi
+
 if [ "$addr:$port" = "$old" ];then
   echo "arukas docker host address not change"
-  rm -rf /isrun
-  exit
+else
+  pkill client
+  echo "$addr:$port" > /arukas.host
+  client -r $addr:$port -mode fast2 -dscp 46 -mtu 1400 -crypt salsa20 -sndwnd 2048 -rcvwnd 2048 -autoexpire 60 -l :4440 -key $KcptunKey &
 fi
-pkill client
-echo "$addr:$port" > /arukas.host
-client -r $addr:$port -mode fast2 -dscp 46 -mtu 1400 -crypt salsa20 -sndwnd 2048 -rcvwnd 2048 -autoexpire 60 -l :4440 -key $KcptunKey &
 rm -rf /isrun

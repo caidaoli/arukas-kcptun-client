@@ -36,30 +36,15 @@ ss-local -s 127.0.0.1 -p 4440 -k "arukas上的密码" -m aes-256-cfb -b 0 -l 905
 
 #也可写成docker-compose.yml
 -
-`arukas-kcptun-client:
-
-
-image: caidaoli/arukas-kcptun-client
-
-
-ports:
-
-
-- '4440:4442'
-
-
-restart: always
-
-
-environment:
-
-- Token=你的
-
-
-- Secret=你的
-
-
-- Endpoint=你的.arukascloud.io
-
-
-- Port=4444`
+```
+arukas-kcptun-client:
+	image: caidaoli/arukas-kcptun-client
+	ports:
+		- '4440:4442'
+	restart: always
+	environment:
+		- Token=你的
+		- Secret=你的
+		- Endpoint=你的.arukascloud.io
+		- Port=4444
+```

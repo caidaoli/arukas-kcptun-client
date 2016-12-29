@@ -1,4 +1,4 @@
-# 利用arukas的api自动获取运行kcptun server的docker的主机地址和端口。
+# 利用arukas的api自动获取运行kcptun server的docker的主机地址和端口。镜像仅仅14M
 
 
 # kcptun Server的密码是password，可以配合 caidaoli/kcptun-socks5-ss-server-docker使用，
@@ -8,10 +8,11 @@
 ####此docker镜像是利用arukas的api获取json信息，并解析对应的ip和端口，如果发生了变化，就重启kcptun的client来保证服务的持续可用性。检查频率是1分钟一次
 	使用此镜像需要设置的环境变量
 1. 	Token
-1. 	Secret
-1. 	Endpoint
-1. 	Port
-1. 	KcptunKey
+2. 	Secret
+3. 	Endpoint
+4. 	Port
+5. 	KcptunKey
+6.	KcpPara 
 
 
 -
@@ -20,6 +21,9 @@
 ####Port 是目标容器的自定义端口，此端口是创建 docker 时自己填的那个，比如22和8388和80什么的
 ####KcptunKey 默认为password
 ####kcptun client的端口为4440
+####KcpPara 自定义kcptun参数，
+最终运行的命令为
+` client -r $addr:$port -mode fast2 -dscp 46 -mtu 1400 -crypt salsa20 $KcpPara -autoexpire 60 -l :4440 -key $KcptunKey `
 -
 #服务端可以这样设置
 ![arukas服务器设置](arukas.png)

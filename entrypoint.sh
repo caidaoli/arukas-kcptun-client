@@ -49,6 +49,6 @@ if [ "$addr:$port" = "$old" ];then
 else
   pkill client
   echo "$addr:$port" > /arukas.host
-  client -r $addr:$port -mode fast2 -dscp 46 -mtu 1400 -crypt salsa20 -sndwnd 2048 -rcvwnd 2048 -autoexpire 60 -l :4440 -key $KcptunKey &
+  client -r $addr:$port -mode fast2 -dscp 46 -mtu 1400 -crypt salsa20 $KcpPara -autoexpire 60 -l :4440 -key $KcptunKey &
 fi
 rm -rf /isrun

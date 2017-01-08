@@ -3,7 +3,7 @@ FROM alpine:latest
 ENV kcptun_latest="https://github.com/xtaci/kcptun/releases/latest" \
     KCPTUN_DIR=/kcp
 RUN set -ex && \
-    apk add --no-cache bash curl jq && \
+    apk add --no-cache curl jq && \
     apk add --no-cache  --virtual TMP wget && \
     [ ! -d ${KCPTUN_DIR} ] && mkdir -p ${KCPTUN_DIR} && cd ${KCPTUN_DIR} && \
     kcptun_latest_release=`curl -s ${kcptun_latest} | cut -d\" -f2` && \
@@ -20,7 +20,7 @@ RUN set -ex && \
     rm -rf /var/cache/apk/* ~/.cache /tmp/libsodium
 
 ADD entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh && crontab -l | { cat; echo "*/1 * * * * bash /entrypoint.sh"; } | crontab -
+RUN chmod +x /entrypoint.sh && crontab -l | { cat; echo "*/1 * * * * sh /entrypoint.sh"; } | crontab -
 #ENTRYPOINT crond -f
-ENTRYPOINT  bash /entrypoint.sh ; crond -f
+ENTRYPOINT  sh /entrypoint.sh ; crond -f
 EXPOSE 4440

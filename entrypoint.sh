@@ -4,37 +4,20 @@ if [ -e "/isrun" ];then
    exit 0
 fi
 echo 1 >/isrun
-rawJson=`curl -s -u $Token:$Secret https://app.arukas.io/api/containers -H "Content-Type: application/vnd.api+json" -H "Accept: application/vnd.api+json" | jq '.data'`
-length=`echo $rawJson | jq "length"`
-addr="lost"
-port="0"
-aimAddr="\"$Endpoint\""
-aimPort=$Port
-for((i=0;i<$length;i++)) ; do
-	endP=`echo $rawJson | jq ".[$i].attributes.end_point"`
-	if [ "$endP" = "$aimAddr" ] ; then
-		portMapping=`echo $rawJson | jq ".[$i].attributes.port_mappings|.[0]"`
-		portMappingLength=`echo $portMapping | jq "length"`
-		for((j=0;j<$portMappingLength;j++)) ; do
-			cPortJson=`echo $portMapping | jq ".[$j]"`
-			cPort=`echo $cPortJson | jq ".container_port"`
-			if [ "$cPort" = "$aimPort" ] ; then
-				port=`echo $cPortJson | jq ".service_port"`
-				addr=`echo $cPortJson | jq ".host" | awk -F '"' '{printf $2}'`
-				#addr=`host $addr | awk -F 'address ' '{printf $2}'`
-			  addr=`nslookup $addr 114.114.114.114 |grep Address | tail -1 | cut -d ":" -f 2`
-        break 2
-			fi
-		done
-	fi
-done
-if [ "$addr" = "lost" -o "$port" = "0" ] ; then
-	echo "Query Failed."
+raw="curl -s -u $Token:$Secret https://app.arukas.io/api/containers -H 'Content-Type: application/vnd.api+json' -H 'Accept: application/vnd.api+json'"
+json=`$raw | jq ".data[]?.attributes | select(.end_point==\"$Endpoint\") | .port_mappings[][] |select(.container_port==$Port)"`
+addr=`echo $json | jq .host | tr -d '""' `
+port=`echo $json | jq .service_port `
+
+if [ -z "$addr" -o -z "$port"  ] ; then
+	echo "Query Failed. Check you Token, Secert, Endpoint and Port!"
   pkill client
 	rm -rf /isrun
   exit 1
 fi
 
+ip=`curl -s http://119.29.29.29/d?dn=$addr`
+addr=${ip:-$addr}
 old=''
 echo "Query OK!Remote Address is $addr:$port"
 if pgrep -x client > /dev/null; then
@@ -52,3 +35,4 @@ else
   client -r $addr:$port -mode fast2 -dscp 46 -mtu 1400 -crypt salsa20 $KcpPara -autoexpire 60 -l :4440 -key $KcptunKey &
 fi
 rm -rf /isrun
+

@@ -2,7 +2,7 @@
 
 
 # kcptun Server的密码是password，可以配合 caidaoli/kcptun-socks5-ss-server-docker使用，
-
+2017.01.26 更新kcptun为20170120
 
 ####arukas的IP和端口是动态的。应用重启或者其他某些原因，会导致IP端口变化。一般每周甚至一天重启一次。Endpoint 是固定的，但是Endpoint不支持 TCP/UDP协议，只支持HTTP。每次都登录进去查看ip和端口很不爽。
 ####此docker镜像是利用arukas的api获取json信息，并解析对应的ip和端口，如果发生了变化，就重启kcptun的client来保证服务的持续可用性。检查频率是1分钟一次
